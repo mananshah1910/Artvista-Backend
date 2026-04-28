@@ -27,13 +27,8 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(withDefaults())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/artworks/**").permitAll() // Simple handling as requested
-                .requestMatchers("/api/exhibitions/**").permitAll()
-                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                .anyRequest().authenticated()
-            )
-            .httpBasic(withDefaults());
+                .anyRequest().permitAll()
+            );
         
         return http.build();
     }
