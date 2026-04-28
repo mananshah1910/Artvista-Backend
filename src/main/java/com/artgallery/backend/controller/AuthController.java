@@ -160,4 +160,9 @@ public class AuthController {
 
         return ResponseEntity.badRequest().body("User not found.");
     }
+
+    @GetMapping("/users")
+    public ResponseEntity<?> getAllUsers() {
+        return ResponseEntity.ok(userRepository.findAll());
+    }
 }
