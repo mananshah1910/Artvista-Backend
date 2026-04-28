@@ -165,4 +165,9 @@ public class AuthController {
     public ResponseEntity<?> getAllUsers() {
         return ResponseEntity.ok(userRepository.findAll());
     }
+
+    @GetMapping("/")
+    public ResponseEntity<String> home() {
+        return ResponseEntity.ok("ArtVista Backend is successfully running! The API is connected and ready to serve requests.");
+    }
 }
