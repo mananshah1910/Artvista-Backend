@@ -20,7 +20,7 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String fromEmail;
 
-    @Async
+    // @Async
     public void sendOtpEmail(String toEmail, String otp) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
@@ -31,12 +31,12 @@ public class EmailService {
             mailSender.send(message);
             log.info("✅ OTP email sent to {}", toEmail);
         } catch (Exception e) {
-            log.error("❌ Failed to send OTP email to {}: {}", toEmail, e.getMessage(), e);
-            throw e;
+            log.error("❌ CRITICAL EMAIL FAILURE to {}: {}. From: {}, Port: {}", toEmail, e.getMessage(), fromEmail, 465, e);
+            throw new RuntimeException("Email delivery failed: " + e.getMessage());
         }
     }
 
-    @Async
+    // @Async
     public void sendNotificationEmail(String toEmail, String subject, String body) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
@@ -47,8 +47,8 @@ public class EmailService {
             mailSender.send(message);
             log.info("✅ Notification email sent to {}", toEmail);
         } catch (Exception e) {
-            log.error("❌ Failed to send notification email to {}: {}", toEmail, e.getMessage(), e);
-            throw e;
+            log.error("❌ CRITICAL NOTIFICATION FAILURE to {}: {}. From: {}, Port: {}", toEmail, e.getMessage(), fromEmail, 465, e);
+            throw new RuntimeException("Notification delivery failed: " + e.getMessage());
         }
     }
 }
