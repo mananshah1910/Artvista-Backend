@@ -165,4 +165,15 @@ public class AuthController {
     public ResponseEntity<?> getAllUsers() {
         return ResponseEntity.ok(userRepository.findAll());
     }
+
+    @PostMapping("/test-email")
+    public ResponseEntity<?> testEmail(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        try {
+            emailService.sendNotificationEmail(email, "ArtVista SMTP Test", "This is a test email from your deployed backend.");
+            return ResponseEntity.ok("Test email sent successfully to " + email);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("SMTP Test Failed: " + e.getMessage());
+        }
+    }
 }
