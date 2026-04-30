@@ -27,14 +27,25 @@ public class EmailService {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            helper.setFrom(new InternetAddress(fromEmail, "ArtVista"));
+            helper.setFrom(new InternetAddress("mananshah1918@gmail.com", "ArtVista Gallery"));
             helper.setTo(toEmail);
             helper.setSubject("ArtVista - Password Reset OTP");
-            helper.setText("Your OTP for password reset is: " + otp + "\n\nThis OTP is valid for 2 minutes.");
+            
+            String htmlBody = "<div style=\"font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 10px;\">"
+                    + "<h2 style=\"color: #333;\">ArtVista</h2>"
+                    + "<div style=\"font-size: 16px; color: #555; line-height: 1.5;\">"
+                    + "Your OTP for password reset is: <strong style=\"font-size: 20px; color: #000;\">" + otp + "</strong><br><br>"
+                    + "This OTP is valid for 2 minutes."
+                    + "</div>"
+                    + "<hr style=\"border: none; border-top: 1px solid #eee; margin: 20px 0;\">"
+                    + "<p style=\"font-size: 12px; color: #999;\">If you did not request this email, please ignore it.</p>"
+                    + "</div>";
+
+            helper.setText(htmlBody, true);
             mailSender.send(message);
-            log.info("✅ OTP email sent to {}", toEmail);
+            log.info("✅ HTML OTP email dispatched to {}", toEmail);
         } catch (Exception e) {
-            log.error("❌ CRITICAL EMAIL FAILURE to {}: {}. From: {}, Port: {}", toEmail, e.getMessage(), fromEmail, 465, e);
+            log.error("❌ CRITICAL EMAIL FAILURE to {}: {}", toEmail, e.getMessage(), e);
             throw new RuntimeException("Email delivery failed: " + e.getMessage());
         }
     }
@@ -44,15 +55,25 @@ public class EmailService {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            helper.setFrom(new InternetAddress(fromEmail, "ArtVista"));
+            helper.setFrom(new InternetAddress("mananshah1918@gmail.com", "ArtVista Gallery"));
             helper.setTo(toEmail);
             helper.setSubject(subject);
-            helper.setText(body);
+            
+            String htmlBody = "<div style=\"font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 10px;\">"
+                    + "<h2 style=\"color: #333;\">ArtVista</h2>"
+                    + "<div style=\"font-size: 16px; color: #555; line-height: 1.5;\">"
+                    + body.replace("\n", "<br>")
+                    + "</div>"
+                    + "<hr style=\"border: none; border-top: 1px solid #eee; margin: 20px 0;\">"
+                    + "<p style=\"font-size: 12px; color: #999;\">If you did not request this email, please ignore it.</p>"
+                    + "</div>";
+
+            helper.setText(htmlBody, true);
             mailSender.send(message);
-            log.info("✅ Notification email sent to {}", toEmail);
+            log.info("Email successfully dispatched to {}", toEmail);
         } catch (Exception e) {
-            log.error("❌ CRITICAL NOTIFICATION FAILURE to {}: {}. From: {}, Port: {}", toEmail, e.getMessage(), fromEmail, 465, e);
-            throw new RuntimeException("Notification delivery failed: " + e.getMessage());
+            log.error("❌ CRITICAL EMAIL FAILURE to {}: {}", toEmail, e.getMessage(), e);
+            throw new RuntimeException("Email delivery failed: " + e.getMessage());
         }
     }
 }
