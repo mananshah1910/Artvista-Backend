@@ -41,6 +41,10 @@ public class AuthController {
         User savedUser = userRepository.save(user);
 
         String otp = otpService.generateOtp(savedUser.getEmail());
+        System.out.println("\n========================================================");
+        System.out.println("🔔 OTP FOR " + savedUser.getEmail() + " IS: " + otp);
+        System.out.println("========================================================\n");
+        
         try {
             emailService.sendNotificationEmail(
                 savedUser.getEmail(), 
@@ -69,6 +73,10 @@ public class AuthController {
 
             if (loggedInUser.isFirstLogin()) {
                 String otp = otpService.generateOtp(loggedInUser.getEmail());
+                System.out.println("\n========================================================");
+                System.out.println("🔔 OTP FOR LOGIN " + loggedInUser.getEmail() + " IS: " + otp);
+                System.out.println("========================================================\n");
+                
                 try {
                     emailService.sendNotificationEmail(
                         loggedInUser.getEmail(), 
@@ -124,6 +132,10 @@ public class AuthController {
         }
 
         String otp = otpService.generateOtp(email);
+        System.out.println("\n========================================================");
+        System.out.println("🔔 FORGOT PASSWORD OTP FOR " + email + " IS: " + otp);
+        System.out.println("========================================================\n");
+        
         try {
             emailService.sendOtpEmail(email, otp);
             return ResponseEntity.ok("OTP sent to your email. It is valid for 2 minutes.");
@@ -172,6 +184,9 @@ public class AuthController {
 
         User user = userOpt.get();
         String otp = otpService.generateOtp(email);
+        System.out.println("\n========================================================");
+        System.out.println("🔔 RESEND OTP FOR " + email + " IS: " + otp);
+        System.out.println("========================================================\n");
         
         try {
             if (user.isFirstLogin()) {
