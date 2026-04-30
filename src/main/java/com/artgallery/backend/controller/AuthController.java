@@ -13,6 +13,7 @@ import java.util.Optional;
 
 import com.artgallery.backend.service.EmailService;
 import com.artgallery.backend.service.OtpService;
+import com.artgallery.backend.security.JwtTokenProvider;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -29,6 +30,9 @@ public class AuthController {
 
     @Autowired
     private OtpService otpService;
+
+    @Autowired
+    private JwtTokenProvider tokenProvider;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) {
@@ -47,7 +51,7 @@ public class AuthController {
         
         try {
             emailService.sendNotificationEmail(
-                savedUser.getEmail(), 
+                java.util.Objects.requireNonNull(savedUser.getEmail()), 
                 "Welcome to ArtVista! Verify your login", 
                 "Hello " + savedUser.getName() + ",\n\nWelcome to ArtVista! We're thrilled to have you join our community.\n\nTo safely complete your first login, please use the following OTP:\n\n" + otp + "\n\nThis OTP is valid for 2 minutes.\n\nBest regards,\nThe ArtVista Team"
             );
@@ -79,7 +83,7 @@ public class AuthController {
                 
                 try {
                     emailService.sendNotificationEmail(
-                        loggedInUser.getEmail(), 
+                        java.util.Objects.requireNonNull(loggedInUser.getEmail()), 
                         "Welcome to ArtVista! Verify your login", 
                         "Hello " + loggedInUser.getName() + ",\n\nWelcome to ArtVista! We're thrilled to have you join our community.\n\nTo safely complete your first login, please use the following OTP:\n\n" + otp + "\n\nThis OTP is valid for 2 minutes.\n\nBest regards,\nThe ArtVista Team"
                     );
@@ -94,7 +98,11 @@ public class AuthController {
                 return ResponseEntity.status(202).body(responseMap);
             }
 
-            return ResponseEntity.ok(loggedInUser);
+            String token = tokenProvider.generateToken(loggedInUser.getEmail(), loggedInUser.getRole());
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", token);
+            response.put("user", loggedInUser);
+            return ResponseEntity.ok(response);
         }
         return ResponseEntity.status(401).body("Invalid credentials");
     }
@@ -115,8 +123,11 @@ public class AuthController {
             user.setFirstLogin(false);
             userRepository.save(user);
 
-            // Now fully logged in
-            return ResponseEntity.ok(user);
+            String token = tokenProvider.generateToken(user.getEmail(), user.getRole());
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", token);
+            response.put("user", user);
+            return ResponseEntity.ok(response);
         }
 
         return ResponseEntity.status(401).body("User not found.");
@@ -137,7 +148,7 @@ public class AuthController {
         System.out.println("========================================================\n");
         
         try {
-            emailService.sendOtpEmail(email, otp);
+            emailService.sendOtpEmail(java.util.Objects.requireNonNull(email), otp);
             return ResponseEntity.ok("OTP sent to your email. It is valid for 2 minutes.");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error sending email: " + e.getMessage());
@@ -162,7 +173,7 @@ public class AuthController {
 
             // Send notification
             try {
-                emailService.sendNotificationEmail(email, "Password Changed Successfully", "Hello " + user.getName() + ",\n\nYour account password has been successfully reset. If you did not make this change, please contact support immediately.");
+                emailService.sendNotificationEmail(java.util.Objects.requireNonNull(email), "Password Changed Successfully", "Hello " + user.getName() + ",\n\nYour account password has been successfully reset. If you did not make this change, please contact support immediately.");
             } catch (Exception e) {
                 // Not critical if notification fails
             }
@@ -191,12 +202,12 @@ public class AuthController {
         try {
             if (user.isFirstLogin()) {
                 emailService.sendNotificationEmail(
-                    email, 
+                    java.util.Objects.requireNonNull(email), 
                     "Welcome to ArtVista! Verify your login", 
                     "Hello " + user.getName() + ",\n\nWelcome to ArtVista! We're thrilled to have you join our community.\n\nTo safely complete your first login, please use the following OTP:\n\n" + otp + "\n\nThis OTP is valid for 2 minutes.\n\nBest regards,\nThe ArtVista Team"
                 );
             } else {
-                emailService.sendOtpEmail(email, otp);
+                emailService.sendOtpEmail(java.util.Objects.requireNonNull(email), otp);
             }
             return ResponseEntity.ok("OTP sent to your email. It is valid for 2 minutes.");
         } catch (Exception e) {
@@ -213,7 +224,7 @@ public class AuthController {
     public ResponseEntity<?> testEmail(@RequestBody Map<String, String> request) {
         String email = request.get("email");
         try {
-            emailService.sendNotificationEmail(email, "ArtVista SMTP Test", "This is a test email from your deployed backend.");
+            emailService.sendNotificationEmail(java.util.Objects.requireNonNull(email), "ArtVista SMTP Test", "This is a test email from your deployed backend.");
             return ResponseEntity.ok("Test email sent successfully to " + email);
         } catch (Exception e) {
             return ResponseEntity.status(500).body("SMTP Test Failed: " + e.getMessage());

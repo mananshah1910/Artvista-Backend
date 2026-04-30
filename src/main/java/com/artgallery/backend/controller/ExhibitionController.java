@@ -20,12 +20,12 @@ public class ExhibitionController {
     }
 
     @PostMapping
-    public Exhibition addExhibition(@RequestBody Exhibition exhibition) {
+    public Exhibition addExhibition(@RequestBody @org.springframework.lang.NonNull Exhibition exhibition) {
         return exhibitionRepository.save(exhibition);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteExhibition(@PathVariable Long id) {
+    public void deleteExhibition(@PathVariable @org.springframework.lang.NonNull Long id) {
         exhibitionRepository.deleteById(id);
     }
 }

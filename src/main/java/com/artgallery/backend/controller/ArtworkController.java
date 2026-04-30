@@ -30,7 +30,7 @@ public class ArtworkController {
     }
 
     @PutMapping("/{id}/approve")
-    public ResponseEntity<?> approveArtwork(@PathVariable Long id) {
+    public ResponseEntity<?> approveArtwork(@PathVariable @org.springframework.lang.NonNull Long id) {
         return artworkRepository.findById(id)
                 .map(artwork -> {
                     artwork.setStatus("approved");
@@ -41,7 +41,7 @@ public class ArtworkController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteArtwork(@PathVariable Long id) {
+    public ResponseEntity<?> deleteArtwork(@PathVariable @org.springframework.lang.NonNull Long id) {
         artworkRepository.deleteById(id);
         return ResponseEntity.ok().build();
     }

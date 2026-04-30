@@ -23,7 +23,7 @@ public class EmailService {
     private String fromEmail;
 
     // @Async
-    public void sendOtpEmail(String toEmail, String otp) {
+    public void sendOtpEmail(@org.springframework.lang.NonNull String toEmail, String otp) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -51,7 +51,7 @@ public class EmailService {
     }
 
     // @Async
-    public void sendNotificationEmail(String toEmail, String subject, String body) {
+    public void sendNotificationEmail(@org.springframework.lang.NonNull String toEmail, @org.springframework.lang.NonNull String subject, String body) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
