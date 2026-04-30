@@ -4,9 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 
 @Service
 public class EmailService {
@@ -22,11 +25,12 @@ public class EmailService {
     // @Async
     public void sendOtpEmail(String toEmail, String otp) {
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(fromEmail);
-            message.setTo(toEmail);
-            message.setSubject("ArtVista - Password Reset OTP");
-            message.setText("Your OTP for password reset is: " + otp + "\n\nThis OTP is valid for 2 minutes.");
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom(new InternetAddress(fromEmail, "ArtVista"));
+            helper.setTo(toEmail);
+            helper.setSubject("ArtVista - Password Reset OTP");
+            helper.setText("Your OTP for password reset is: " + otp + "\n\nThis OTP is valid for 2 minutes.");
             mailSender.send(message);
             log.info("✅ OTP email sent to {}", toEmail);
         } catch (Exception e) {
@@ -38,11 +42,12 @@ public class EmailService {
     // @Async
     public void sendNotificationEmail(String toEmail, String subject, String body) {
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(fromEmail);
-            message.setTo(toEmail);
-            message.setSubject(subject);
-            message.setText(body);
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom(new InternetAddress(fromEmail, "ArtVista"));
+            helper.setTo(toEmail);
+            helper.setSubject(subject);
+            helper.setText(body);
             mailSender.send(message);
             log.info("✅ Notification email sent to {}", toEmail);
         } catch (Exception e) {

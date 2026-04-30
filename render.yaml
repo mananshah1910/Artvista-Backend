@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: artvista-backend
+    env: docker
+    plan: free
+    healthCheckPath: /api/auth/users
+    envVars:
+      - key: MAIL_USERNAME
+        value: mananshah1918@gmail.com
+      - key: MAIL_PASSWORD
+        value: djatoufgimsavcty
+      - key: PORT
+        value: 8080

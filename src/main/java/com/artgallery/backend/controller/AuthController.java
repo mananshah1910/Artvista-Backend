@@ -161,6 +161,34 @@ public class AuthController {
         return ResponseEntity.badRequest().body("User not found.");
     }
 
+    @PostMapping("/resend-otp")
+    public ResponseEntity<?> resendOtp(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body("User with this email does not exist.");
+        }
+
+        User user = userOpt.get();
+        String otp = otpService.generateOtp(email);
+        
+        try {
+            if (user.isFirstLogin()) {
+                emailService.sendNotificationEmail(
+                    email, 
+                    "Welcome to ArtVista! Verify your login", 
+                    "Hello " + user.getName() + ",\n\nWelcome to ArtVista! We're thrilled to have you join our community.\n\nTo safely complete your first login, please use the following OTP:\n\n" + otp + "\n\nThis OTP is valid for 2 minutes.\n\nBest regards,\nThe ArtVista Team"
+                );
+            } else {
+                emailService.sendOtpEmail(email, otp);
+            }
+            return ResponseEntity.ok("OTP sent to your email. It is valid for 2 minutes.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error sending email: " + e.getMessage());
+        }
+    }
+
     @GetMapping("/users")
     public ResponseEntity<?> getAllUsers() {
         return ResponseEntity.ok(userRepository.findAll());
